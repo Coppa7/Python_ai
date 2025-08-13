@@ -1,0 +1,41 @@
+Frase,Intento
+ciao,saluto
+buongiorno,saluto
+hey,saluto
+salve,saluto
+buon pomeriggio,saluto
+"ehi, come va?",saluto
+ciao amico,saluto
+buongiorno a tutti,saluto
+ehi! tutto bene?,saluto
+salve a tutti,saluto
+qual è il meteo oggi?,meteo
+mi puoi dire il tempo?,meteo
+pioverà domani?,meteo
+che tempo fa oggi?,meteo
+voglio sapere se piove,meteo
+dimmi le previsioni del tempo,meteo
+che tempo farà nel weekend?,meteo
+c’è sole oggi?,meteo
+come sarà il tempo domani?,meteo
+rischio temporale oggi?,meteo
+voglio ordinare una pizza,ordine_cibo
+posso ordinare un panino?,ordine_cibo
+ordino una pizza margherita,ordine_cibo
+prendo una pasta,ordine_cibo
+vorrei una birra,ordine_cibo
+mi dai una coca cola?,ordine_cibo
+voglio provare il dessert,ordine_cibo
+ordino una pizza al salame,ordine_cibo
+"una porzione di patatine, per favore",ordine_cibo
+posso avere una pizza vegetariana?,ordine_cibo
+raccontami una barzelletta,barzelletta
+voglio ridere,barzelletta
+sai una barzelletta?,barzelletta
+fammi ridere,barzelletta
+raccontami qualcosa di divertente,barzelletta
+"una barzelletta, per favore",barzelletta
+voglio sentire una battuta,barzelletta
+puoi raccontarmi una barzelletta?,barzelletta
+ho bisogno di ridere,barzelletta
+fammi ridere un po’,barzelletta
