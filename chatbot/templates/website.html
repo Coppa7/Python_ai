@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semplice Chatbot</title>
+</head>
+<body>
+    <form method="POST" action="/chat">
+        <label for="input_txt" style="font-size: 24px; font-weight: bold;">
+            Chat with the bot:
+        </label><br>
+        <input type="text" id="input_txt" name="input_txt"><br><br>
+    </form>
+
+    {% if response %}
+        <h2>Bot's response:</h2>
+        <p>{{ response }}</p>
+    {% else %}
+        <h3>Write something!</h3>
+    {% endif %}
+</body>
+</html>
