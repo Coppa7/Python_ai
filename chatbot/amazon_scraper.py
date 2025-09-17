@@ -107,5 +107,3 @@ synonims = {
     "logitech g213 prodigy tastiera gaming": "tastiera logitech",
     "tastiera": "tastiera logitech" # Not general
 }
-
-get_price_discount(name_url, synonims, "Dimmi il prezzo di un raspberry")
