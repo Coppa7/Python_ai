@@ -1,4 +1,12 @@
 main {
-    text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items:center;
+    height:100vh;
     color:black;
+}
+
+.bot_response{
+    text-align:center;
 }
