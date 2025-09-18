@@ -10,6 +10,9 @@ import json
 import random
 import pickle
 import os
+import numpy as np
+
+np.set_printoptions(precision=3, suppress=True)
 
 
 def create_model(vectorizer, encoder):
@@ -49,7 +52,7 @@ def create_model(vectorizer, encoder):
         layers.Dense(128, activation='relu', input_shape=[X_trainv.shape[1]]),
         layers.Dropout(0.3),
         layers.Dense(64, activation='relu'),
-        layers.Dense(len(encoder.classes_), activation='softmax'), # Only has 4 output decisions (for now)
+        layers.Dense(len(encoder.classes_), activation='softmax'),  
     ])
 
 
@@ -101,12 +104,15 @@ def frase_input(intents, model, vectorizer, encoder):
     pred_intent = encoder.inverse_transform([pred_probs.argmax()])[0]
     print(pred_probs*100)
     print(pred_intent)
+    if pred_probs[0].max() <= 0.5:                      
+        print("I'm sorry, I couldn't understand.") #Fallback phrase
+        return
     for intent in intents:
         if pred_intent == intent['tag'] and pred_intent != "price_request": # Needs to be changed to be more general
             print(random.choice(intent['responses']))
         elif pred_intent == "price_request":
             get_price_discount(name_url, synonims, frase)
-            break
+            return
 
 
 
@@ -117,6 +123,7 @@ history, model, intents = create_model(vectorizer, encoder)
 if __name__ == '__main__':
     plot_model(history)
 
+frase_input(intents, model, vectorizer, encoder)
 
 model.save("chatbot_model.h5")
 
