@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Semplice Chatbot</title>
+    <title>Simple chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='website_style.css') }}"">
 </head>
 <body>
@@ -10,13 +10,14 @@
         <form method="POST" action="/chat">
         <input type="text" id="input_txt" name="input_txt" placeholder="Chat with the bot:"><br><br>
         </form>
-
-        {% if response %}
-            <h2>Bot's response:</h2>
-            <p>{{ response }}</p>
-        {% else %}
-            <h3>Write something!</h3>
-        {% endif %}
+        <div class="bot_response">
+            {% if response %}
+                <h2>Bot's response:</h2>    
+                <p>{{ response }}</p>
+            {% else %}
+                <h3>Write something!</h3>
+            {% endif %}
+        </div>
     </main>
 </body>
 </html>
