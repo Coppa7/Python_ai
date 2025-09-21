@@ -104,7 +104,7 @@ def frase_input(intents, model, vectorizer, encoder):
     pred_intent = encoder.inverse_transform([pred_probs.argmax()])[0]
     print(pred_probs*100)
     print(pred_intent)
-    if pred_probs[0].max() <= 0.5:                      
+    if pred_probs[0].max() <= 0.25 or pred_intent == 'fallback':                      
         print("I'm sorry, I couldn't understand.") #Fallback phrase
         return
     for intent in intents:
