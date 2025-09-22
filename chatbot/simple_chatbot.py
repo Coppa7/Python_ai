@@ -1,8 +1,7 @@
-from tensorflow import keras
-from tensorflow.keras import layers
+from tensorflow.keras import Sequential, layers
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
+from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import LabelEncoder
 from amazon_scraper import get_price_discount, name_url, synonims
 import matplotlib.pyplot as plt
@@ -15,7 +14,7 @@ import numpy as np
 np.set_printoptions(precision=3, suppress=True)
 
 
-def create_model(vectorizer, encoder):
+def create_model(transformer, encoder):
     # Opening local folder to load data
     with open(os.path.join(os.path.dirname(__file__), "chatbot_qa.json"), "r", encoding='utf-8') as f:
         data = json.load(f)
@@ -31,9 +30,9 @@ def create_model(vectorizer, encoder):
     # Splitting data into training and validation
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.2, random_state=0)
 
-    # Vectorization + encoding
-    X_trainv = (vectorizer.fit_transform(X_train)).toarray()
-    X_valv = (vectorizer.transform(X_val)).toarray()
+    # Transformer + encoding
+    X_trainv = transformer.encode(X_train)
+    X_valv = transformer.encode(X_val)
 
 
     y_trainl = encoder.fit_transform(y_train)
@@ -42,17 +41,18 @@ def create_model(vectorizer, encoder):
     # To be optimized
     early_stopping = EarlyStopping(
         min_delta = 0.001,
-        patience=30,
+        patience=25,
         restore_best_weights=True,
     )
 
     # Neural network, to be optimized
-    model = keras.Sequential([
-        layers.Dropout(0.3),
-        layers.Dense(128, activation='relu', input_shape=[X_trainv.shape[1]]),
+    model = Sequential([
+        #layers.Input(shape=(X_trainv.shape[1],)),  # input layer
+        layers.Dense(128, activation='relu', input_shape=(X_trainv.shape[1],)),
         layers.Dropout(0.3),
         layers.Dense(64, activation='relu'),
-        layers.Dense(len(encoder.classes_), activation='softmax'),  
+        layers.Dropout(0.3),
+        layers.Dense(len(encoder.classes_), activation='softmax')
     ])
 
 
@@ -97,38 +97,42 @@ def plot_model(history):
     plt.show()
 
 # Test function to check if the model works
-def frase_input(intents, model, vectorizer, encoder):
-    frase = input()
-    frasev = vectorizer.transform([frase])
-    pred_probs = model.predict(frasev.toarray()) # probability for each class 
-    pred_intent = encoder.inverse_transform([pred_probs.argmax()])[0]
-    print(pred_probs*100)
-    print(pred_intent)
-    if pred_probs[0].max() <= 0.25 or pred_intent == 'fallback':                      
-        print("I'm sorry, I couldn't understand.") #Fallback phrase
-        return
-    for intent in intents:
-        if pred_intent == intent['tag'] and pred_intent != "price_request": # Needs to be changed to be more general
-            print(random.choice(intent['responses']))
-        elif pred_intent == "price_request":
-            get_price_discount(name_url, synonims, frase)
-            return
+def frase_input(intents, model, transformer, encoder):
+    frase = ""
+    while frase != "exit":
+        frase = input()
+        frasev = transformer.encode([frase])
+        pred_probs = model.predict(frasev) # probability for each class 
+        pred_intent = encoder.inverse_transform([pred_probs.argmax()])[0]
+        print(pred_probs*100)
+        print(pred_intent)
+        if pred_probs[0].max() <= 0.50 or pred_intent == 'fallback':   
+            print("I'm sorry, I couldn't understand.") 
+            #Fallback phrase
+            continue
+        for intent in intents:
+            if pred_intent == intent['tag'] and pred_intent != "price_request":
+                # Needs to be changed to be more general
+                print(random.choice(intent['responses']))
+            elif pred_intent == "price_request":
+                print(get_price_discount(name_url, synonims, frase))
 
 
 
-vectorizer = CountVectorizer()
+transformer = SentenceTransformer('all-MiniLM-L6-v2')
 encoder = LabelEncoder()
-history, model, intents = create_model(vectorizer, encoder)
+history, model, intents = create_model(transformer, encoder)
 
 if __name__ == '__main__':
     plot_model(history)
+    
+model.export("chatbot_model")
 
-frase_input(intents, model, vectorizer, encoder)
+frase_input(intents, model, transformer, encoder)
 
-model.save("chatbot_model.h5")
 
-with open("vectorizer.pkl", "wb") as f:
-    pickle.dump(vectorizer, f)
+with open("transformer.pkl", "wb") as f:
+    pickle.dump(transformer, f)
 
 with open("encoder.pkl", "wb") as f:
     pickle.dump(encoder, f)
