@@ -95,27 +95,51 @@ def plot_model(history):
     plt.legend()
 
     plt.show()
+    
+def test_phrase(intents, model, transformer, encoder, frase, input_type):
+    score = 0
+    frasev = transformer.encode([frase])
+    pred_probs = model.predict(frasev) # probability for each class 
+    pred_intent = encoder.inverse_transform([pred_probs.argmax()])[0]
+    print("------------------------------------------------------------------------")
+    print("Phrase: ", frase)
+    print("Prob: ", pred_probs*100)
+    
+    if pred_probs.max() <= 0.50:
+        pred_intent = "fallback"
+        
+    print("Intent: ", pred_intent)
+    print("------------------------------------------------------------------------")
+    if pred_probs[0].max() <= 0.50 or pred_intent == 'fallback':   
+        print("I'm sorry, I couldn't understand.") 
+        #Fallback phrase
+    for intent in intents:
+        if pred_intent == intent['tag'] and pred_intent != "price_request":
+            # Needs to be changed to be more general
+            print(random.choice(intent['responses']))
+        elif pred_intent == "price_request":
+            print(get_price_discount(name_url, synonims, frase))
+    if input_type == 1:
+        for intent in test_sentences[frase]:
+            if pred_intent == intent:
+                return 1
+    return 0
 
 # Test function to check if the model works
-def frase_input(intents, model, transformer, encoder):
+def frase_input(intents, model, transformer, encoder, input_type): # type 0 = manual, type 1 = test sentences
+    score = 0
     frase = ""
-    while frase != "exit":
-        frase = input()
-        frasev = transformer.encode([frase])
-        pred_probs = model.predict(frasev) # probability for each class 
-        pred_intent = encoder.inverse_transform([pred_probs.argmax()])[0]
-        print(pred_probs*100)
-        print(pred_intent)
-        if pred_probs[0].max() <= 0.50 or pred_intent == 'fallback':   
-            print("I'm sorry, I couldn't understand.") 
-            #Fallback phrase
-            continue
-        for intent in intents:
-            if pred_intent == intent['tag'] and pred_intent != "price_request":
-                # Needs to be changed to be more general
-                print(random.choice(intent['responses']))
-            elif pred_intent == "price_request":
-                print(get_price_discount(name_url, synonims, frase))
+    if input_type == 0:
+        while frase != 'exit':
+            frase = input()
+            test_phrase(intents, model, transformer, encoder, frase, 0)
+    else:
+        for sentence in test_sentences.keys():
+            score += test_phrase(intents, model, transformer, encoder, sentence, 1)
+            
+    print("Score: ", score / len(test_sentences))
+            
+
 
 
 
@@ -126,9 +150,76 @@ history, model, intents = create_model(transformer, encoder)
 if __name__ == '__main__':
     plot_model(history)
     
+# I created some sentences to test the model on with their expected intents 
+
+test_sentences = {
+    "hey": ["greeting", "fallback"],
+    "ahola": ["greeting", "fallback"],
+    "hola": ["greeting", "fallback"],
+    "gtg": ["goodbye", "fallback"],
+    "watsup": ["greeting", "fallback"],
+    "are you a human or a bot?": ["explanation", "fallback"],
+    "hello": ["greeting"],
+    "hi there": ["greeting"],
+    "good morning": ["greeting"],
+    "good evening": ["greeting"],
+    "how are you?": ["emotional_request"],
+    "what can you do?": ["explanation"],
+    "are you a human?": ["explanation", "fallback"],
+    "are you a bot or a person?": ["explanation", "fallback"],
+    "I don’t know what to ask": ["fallback"],
+    "can you understand me?": ["explanation", "fallback"],
+    "talk to me": ["fallback"],
+    "tell me something interesting": ["jokes", "fun_facts", "fallback"],
+    "I’m bored": ["jokes", "fun_facts", "fallback"],
+    "do you know any jokes?": ["jokes", "fallback"],
+    "surprise me": ["jokes", "fallback"],
+    "I’m testing you": ["fallback"],
+    "how smart are you?": ["explanation", "fallback"],
+    "what are your limits?": ["explanation", "fallback"],
+    "can you help me with anything?": ["explanation", "fallback"],
+    "say something random": ["fallback", "jokes", "fun_facts"],
+    "I’m confused": ["fallback"],
+    "explain yourself": ["explanation"],
+    "do you remember what I said before?": ["explanation", "fallback"],
+    "repeat after me": ["fallback"],
+    "are you learning from me?": ["explanation", "fallback"],
+    "I want to see if you understand": ["fallback"],
+    "what happens if I type nonsense?": ["explanation", "fallback"],
+    "can you handle tricky questions?": ["explanation", "fallback"],
+    "try to guess what I’m thinking": ["fallback"],
+    "do you have feelings?": ["explanation", "fallback"],
+    "what is the meaning of life?": ["fallback"],
+    "can you talk about anything?": ["explanation", "fallback"],
+    "I’m not sure what to say": ["fallback"],
+    "say hello in another language": ["greeting", "fallback"], # to be improved
+    "can you understand slang?": ["explanation", "fallback"],
+    "respond like a human": ["explanation", "fallback"],
+    "pretend to be funny": ["jokes", "fallback"],
+    "tell me a story": ["fun_facts", "fallback", "jokes"],
+    "I’m just testing you": ["fallback"],
+    "are you aware of yourself?": ["explanation", "fallback"],
+    "do you know who I am?": ["explanation", "fallback"],
+    "give me advice": ["fallback"],
+    "respond in a sarcastic way":["jokes", "fallback"],
+    "answer like a robot": ["explanation", "fallback"],
+    "try to confuse me": ["fallback"],
+    "do you know riddles?": ["jokes", "fallback"],
+    "say something philosophical": ["fun_facts", "fallback"],
+}
+
+expected_intents = [
+    
+]
+
+
+
+frase_input(intents, model, transformer, encoder, 1)
+    
+    
+'''
 model.export("chatbot_model")
 
-frase_input(intents, model, transformer, encoder)
 
 
 with open("transformer.pkl", "wb") as f:
@@ -136,5 +227,5 @@ with open("transformer.pkl", "wb") as f:
 
 with open("encoder.pkl", "wb") as f:
     pickle.dump(encoder, f)
-    
+'''
     
