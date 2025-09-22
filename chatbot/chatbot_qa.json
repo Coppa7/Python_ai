@@ -3,6 +3,8 @@
     {
       "tag": "greeting",
       "prompts": [
+        "Yo",
+        "Hey",
         "What's up",
         "What's up bro",
         "Whats up dude",
@@ -1307,7 +1309,22 @@
         "You are useless",
         "You are bad",
         "You are not kind at all",
-        "Hello world!"
+        "Hello world!",
+        "wsg",
+        "idk",
+        "brb",
+        "why",
+        "why not",
+        "best buy",
+        "important stuff",
+        "random stuff",
+        "supercalifragilisticexpialidocious",
+        "antidisestablishmentarianism",
+        "mama mia",
+        "just do it",
+        "carpe diem",
+        "idk what to do",
+        "i don't know what to do"
       ],
       "responses":[
         "Never to be called"
