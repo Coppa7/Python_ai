@@ -11,6 +11,9 @@ import pickle
 import os
 import numpy as np
 
+# 1103 total phrases
+# Model could be optimized still in the future, gets 94%-96% validation accuracy
+
 np.set_printoptions(precision=3, suppress=True)
 
 
@@ -40,8 +43,8 @@ def create_model(transformer, encoder):
 
     # To be optimized
     early_stopping = EarlyStopping(
-        min_delta = 0.001,
-        patience=25,
+        min_delta = 0.0025,
+        patience=5,
         restore_best_weights=True,
     )
 
