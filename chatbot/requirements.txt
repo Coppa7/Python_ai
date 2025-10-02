@@ -1,0 +1,10 @@
+tensorflow
+sentence-transformers
+scikit-learn
+pandas
+numpy
+matplotlib
+flask
+requests
+beautifulsoup4
+rapidfuzz
